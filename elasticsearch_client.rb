@@ -11,7 +11,7 @@ class ElasticsearchClient
     payload = {
       query: {
         match: {
-          _id: "/adult-dependants-grant"
+          _id: id
         }
       }
     }
