@@ -13,12 +13,19 @@ input = [
 client = ElasticsearchClient.new
 
 missing_docs = Set.new
+found_docs = Set.new
 
 input.each do |path|
   cleaned_path = path.sub(/\?.*$/, "")
-  es_doc = client.get(id: cleaned_path)
+  if !(missing_docs.include?(cleaned_path) || found_docs.include?(cleaned_path))
+    es_doc = client.get(id: cleaned_path)
 
-  missing_docs << cleaned_path if es_doc.nil?
+    if es_doc.nil?
+      missing_docs << cleaned_path
+    else
+      found_docs << cleaned_path
+    end
+  end
 end
 
 puts "#{missing_docs.count} missing documents"
