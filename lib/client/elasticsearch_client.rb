@@ -7,6 +7,10 @@ class ElasticsearchClient
     )
   end
 
+  def create_index(name)
+    @client.indices.create(index: name)
+  end
+
   def get(id:)
     payload = {
       query: {
