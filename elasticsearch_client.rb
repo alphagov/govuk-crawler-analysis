@@ -16,6 +16,12 @@ class ElasticsearchClient
       }
     }
 
-    @client.search(index: "mainstream,government,detailed", body: payload)
+    response = @client.search(index: "mainstream,government,detailed", body: payload)
+
+    hits = response["hits"]
+    total = hits["total"]
+    raise "#{id} has #{total} hits. Expected 1 hit." if total != 1
+
+    hits["hits"].first
   end
 end
