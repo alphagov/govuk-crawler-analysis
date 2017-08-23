@@ -6,6 +6,13 @@ client = Elasticsearch::Client.new(
   transport_options: { headers: { "Content-Type" => "application/json" } }
 )
 
-response = client.get(type: '_all', id: "/guidance/open-policy-making-toolkit", index: "detailed")
+payload = {
+  query: {
+    match: {
+      _id: "/adult-dependants-grant"
+    }
+  }
+}
+response = client.search(index: "mainstream,government,detailed", body: payload)
 
 puts response
