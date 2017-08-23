@@ -1,5 +1,5 @@
 require "elasticsearch"
-require_relative "elasticsearch_client"
+require_relative "lib/elasticsearch_client"
 
 input = [
   "/government/publications/designated-teacher-for-looked-after-children", # statutory_guidance
