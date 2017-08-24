@@ -1,4 +1,8 @@
 class ElasticsearchClient
+  extend Forwardable
+
+  def_delegator :@client, :create
+
   def initialize
     @client = Elasticsearch::Client.new(
       hosts: "http://localhost:9200",

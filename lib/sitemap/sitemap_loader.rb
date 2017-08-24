@@ -14,10 +14,20 @@ class SitemapLoader
     doc = File.open(sitemap_file) { |f| Nokogiri::XML(f) }
     puts "Finding URLs in sitemap"
     urls = doc.css("url loc")
-    puts "Found #{pages.count} pages in sitemap"
+    puts "Found #{urls.count} pages in sitemap"
 
-    urls.each do |page|
-      puts url.text
+    urls.each_with_index do |url, index|
+      body = {
+        url: url
+      }
+      client.create(
+        index: full_name,
+        type: "sitemap_url",
+        id: url,
+        body: body
+      )
+
+      puts "Saved #{index} URLs" if index % 1000 == 0
     end
   end
 end
