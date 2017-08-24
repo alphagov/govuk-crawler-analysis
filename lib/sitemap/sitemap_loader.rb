@@ -1,22 +1,23 @@
 require_relative "../client/elasticsearch_client"
 require "nokogiri"
+require "securerandom"
 
 class SitemapLoader
   def self.load_sitemap(sitemap_file, index_name)
     client = ElasticsearchClient.new
 
-    # client.create_index(index_name)
-    # puts "Created index '#{index_name}'!"
+    full_name = index_name + "_" + SecureRandom.uuid
+
+    client.create_index(full_name)
+    puts "Created index '#{full_name}'!"
 
     doc = File.open(sitemap_file) { |f| Nokogiri::XML(f) }
     puts "Finding URLs in sitemap"
-    pages = doc.css("url loc")
+    urls = doc.css("url loc")
     puts "Found #{pages.count} pages in sitemap"
 
-    pages.each do |page|
-      puts page.text
+    urls.each do |page|
+      puts url.text
     end
-
-    require 'pry'; binding.pry
   end
 end
