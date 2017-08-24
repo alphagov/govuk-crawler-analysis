@@ -1,7 +1,7 @@
 class ElasticsearchClient
   extend Forwardable
 
-  def_delegator :@client, :create
+  def_delegator :@client, :index
 
   def initialize
     @client = Elasticsearch::Client.new(
