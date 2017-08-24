@@ -1,6 +1,6 @@
 require "thor"
 require_relative "comparison/internal_index_analyser"
-require_relative "sitemap/sitemap_loader"
+require_relative "sitemap/sitemap_saver"
 
 class CrawlAnalyser < Thor
   desc "missing_from_sitemap CRAWLER_SITEMAP", "Find files which were crawled but are not in the internal search index"
@@ -10,6 +10,6 @@ class CrawlAnalyser < Thor
 
   desc "load_sitemap SITEMAP_FILE INDEX_NAME", "Load sitemap file into an Elasticsearch index"
   def load_sitemap(sitemap_file, index_name)
-    SitemapLoader.load_sitemap(sitemap_file, index_name)
+    SitemapSaver.load_sitemap(sitemap_file, index_name)
   end
 end
