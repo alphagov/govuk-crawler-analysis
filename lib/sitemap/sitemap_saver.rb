@@ -33,8 +33,11 @@ class SitemapSaver
 
 private
   def self.extract_path(url)
-    url.sub("https://www.gov.uk", "")
+    url.downcase
+      .sub("https://www.gov.uk", "")
       .sub("http://www.gov.uk", "")
-      .sub(/\?.*$/, "")
+      .sub(/^\/\//, "/") # some paths have two leading slashes
+      .sub(/\/$/, "") # strip trailing slash
+      .sub(/\?.*$/, "") # strip query string
   end
 end
