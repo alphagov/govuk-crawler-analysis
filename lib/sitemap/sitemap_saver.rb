@@ -1,4 +1,5 @@
 require_relative "../client/elasticsearch_client"
+require_relative "sitemap_loader"
 require "nokogiri"
 require "securerandom"
 
@@ -11,14 +12,9 @@ class SitemapSaver
     client.create_index(full_name)
     puts "Created index '#{full_name}'!"
 
-    doc = File.open(sitemap_file) { |f| Nokogiri::XML(f) }
-    puts "Finding URLs in sitemap"
-    locations = doc.css("url loc")
-    puts "Found #{locations.count} pages in sitemap"
+    sitemap = SitemapLoader.iterator(sitemap_file)
 
-    locations.each_with_index do |location, index|
-      url = location.text
-
+    sitemap.each_with_index do |url, index|
       body = {
         url: url
       }
