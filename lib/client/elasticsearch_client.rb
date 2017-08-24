@@ -11,8 +11,16 @@ class ElasticsearchClient
     )
   end
 
+  def all_indices
+    @client.cat.indices.map { |i| i["index"] }
+  end
+
   def create_index(name)
     @client.indices.create(index: name)
+  end
+
+  def delete_indices(names)
+    @client.indices.delete(index: names)
   end
 
   def get(id:)
