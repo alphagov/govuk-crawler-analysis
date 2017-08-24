@@ -1,24 +1,18 @@
 require "elasticsearch"
 require_relative "../client/elasticsearch_client"
+require_relative "../sitemap/sitemap_loader"
 
 class InternalIndexAnalyser
-  def self.find_pages_missing_from_sitemap
-    input = [
-      "/government/publications/designated-teacher-for-looked-after-children", # statutory_guidance
-      "/government/publications/designated-teacher-for-looked-after-children?some-query", # duplicate
-      "/if-your-child-is-taken-into-care", # guidance
-      "/government/news/government-to-extend-green-flag-award-for-5-more-years", # press_release
-      "/not/a/govuk/path",
-      "/not/a/govuk/path?other-version",
-    ]
+  def self.find_pages_missing_from_sitemap(crawler_sitemap)
+    sitemap_pages = SitemapLoader.iterator(crawler_sitemap)
 
     client = ElasticsearchClient.new
 
     missing_docs = Set.new
     found_docs = Set.new
 
-    input.each do |path|
-      cleaned_path = path.sub(/\?.*$/, "")
+    sitemap_pages.each_with_index do |url, index|
+      cleaned_path = clean_path(url)
       if !(missing_docs.include?(cleaned_path) || found_docs.include?(cleaned_path))
         es_doc = client.get(id: cleaned_path)
 
@@ -28,9 +22,24 @@ class InternalIndexAnalyser
           found_docs << cleaned_path
         end
       end
+
+      puts "Compared #{index} pages. #{missing_docs.count} missing so far." if index % 5000 == 0
     end
 
     puts "#{missing_docs.count} missing documents"
-    puts missing_docs.to_a
+    puts "#{found_docs.count} found documents"
+    puts "#{found_docs.count + missing_docs.count} total documents"
+
+    File.open("missing_from_sitemap.out", "w") do |file|
+      missing_docs.each do |doc|
+        file.puts(doc)
+      end
+    end
+  end
+
+  def self.clean_path(url)
+    url.sub("https://www.gov.uk", "")
+      .sub("http://www.gov.uk", "")
+      .sub(/\?.*$/, "")
   end
 end

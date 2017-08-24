@@ -38,7 +38,7 @@ class ElasticsearchClient
     total = hits["total"]
 
     return nil if total == 0
-    raise "#{id} has #{total} hits. Expected 1 hit." if total > 1
+    puts "#{id} has #{total} hits. Expected 1 hit." if total > 1
 
     hits["hits"].first
   end
