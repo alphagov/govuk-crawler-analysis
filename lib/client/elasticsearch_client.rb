@@ -23,7 +23,7 @@ class ElasticsearchClient
     @client.indices.delete(index: names)
   end
 
-  def get(id:)
+  def get(id:, index: "mainstream,government,detailed")
     payload = {
       query: {
         match: {
@@ -32,7 +32,7 @@ class ElasticsearchClient
       }
     }
 
-    response = @client.search(index: "mainstream,government,detailed", body: payload)
+    response = @client.search(index: index, body: payload)
 
     hits = response["hits"]
     total = hits["total"]
