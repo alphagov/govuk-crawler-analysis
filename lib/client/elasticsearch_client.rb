@@ -42,4 +42,34 @@ class ElasticsearchClient
 
     hits["hits"].first
   end
+
+  def get_all(index)
+    search_body = { query: { match_all: {} } }
+    scroll_timeout = "1m"
+
+    initial_scroll = @client.search(
+      index: index,
+      scroll: scroll_timeout,
+      size: 50,
+      body: search_body,
+      search_type: "scan",
+    )
+
+    scroll_id = initial_scroll.fetch("_scroll_id")
+
+    Enumerator.new do |yielder|
+      loop do
+        page = @client.scroll(scroll_id: scroll_id, scroll: scroll_timeout)
+        scroll_id = page.fetch("_scroll_id")
+
+        hits = page["hits"]["hits"]
+
+        break if hits.count == 0
+
+        hits.each do |hit|
+          yielder << hit
+        end
+      end
+    end
+  end
 end

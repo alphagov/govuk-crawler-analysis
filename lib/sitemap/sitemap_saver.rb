@@ -20,12 +20,16 @@ class SitemapSaver
       body = {
         path: path
       }
-      client.index(
-        index: full_name,
-        type: "sitemap_url",
-        id: path,
-        body: body
-      )
+      begin
+        client.index(
+          index: full_name,
+          type: "sitemap_url",
+          id: path,
+          body: body
+        )
+      rescue Elasticsearch::Transport::Transport::Errors::BadRequest => e
+        puts "Warn: could not save URL #{path}. #{e.message}"
+      end
 
       puts "Saved #{index} URLs" if index % 1000 == 0
     end
