@@ -1,3 +1,5 @@
+require "csv"
+
 class CrawlerAnalyser
   def self.find_pages_missing_from_crawl(crawler_index)
     client = ElasticsearchClient.new
@@ -6,7 +8,7 @@ class CrawlerAnalyser
     missing_docs = Set.new
     found_urls = Set.new
 
-    pages_in_site_search.take(500).each_with_index do |page, index|
+    pages_in_site_search.each_with_index do |page, index|
       sitemap_page = client.get(id: page["_id"], index: crawler_index)
 
       if sitemap_page.nil?
@@ -19,5 +21,19 @@ class CrawlerAnalyser
     end
 
     puts "Found #{missing_docs.count} missing docs"
+
+    CSV.open("missing_from_crawl.csv", "w") do |csv|
+      csv << ["base_path", "content_store_document_type", "elasticsearch_type", "publishing_app", "is_withdrawn"]
+
+      missing_docs.each do |doc|
+        csv << [
+          doc["_id"],
+          doc["_source"]["content_store_document_type"],
+          doc["_type"],
+          doc["_source"]["publishing_app"],
+          doc["_source"]["is_withdrawn"] ? "true" : "false",
+        ]
+      end
+    end
   end
 end
