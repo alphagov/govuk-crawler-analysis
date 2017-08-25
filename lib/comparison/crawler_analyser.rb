@@ -35,5 +35,7 @@ class CrawlerAnalyser
         ]
       end
     end
+
+    puts "Saved output to 'missing_from_crawl.csv'"
   end
 end

@@ -30,11 +30,13 @@ class InternalIndexAnalyser
     puts "#{found_docs.count} found documents"
     puts "#{found_docs.count + missing_docs.count} total documents"
 
-    File.open("missing_from_sitemap.out", "w") do |file|
+    File.open("missing_from_sitemap.csv", "w") do |file|
       missing_docs.each do |doc|
         file.puts(doc)
       end
     end
+
+    puts "Saved output to 'missing_from_sitemap.csv'"
   end
 
   def self.clean_path(url)
